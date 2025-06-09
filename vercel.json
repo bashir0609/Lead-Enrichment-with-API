@@ -1,1 +1,29 @@
-
+{
+  "version": 2,
+  "name": "lead-enrichment-platform",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "headers": {
+        "cache-control": "s-maxage=31536000,immutable"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_APP_NAME": "LeadFlow",
+    "REACT_APP_VERSION": "1.0.0"
+  }
+}
