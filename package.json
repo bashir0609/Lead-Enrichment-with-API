@@ -1,1 +1,44 @@
-
+{
+  "name": "lead-enrichment-platform",
+  "version": "1.0.0",
+  "description": "Professional Lead Enrichment & Contact Management Platform",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "lucide-react": "^0.263.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "keywords": [
+    "lead-enrichment",
+    "contact-management",
+    "b2b-sales",
+    "data-enrichment",
+    "crm"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
