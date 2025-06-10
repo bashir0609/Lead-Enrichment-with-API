@@ -1,3 +1,6 @@
+// Update src/components/LeadEnrichmentPlatform.js
+// Find the state initialization section and replace it with this:
+
 import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, Users, UserPlus, Building2, Zap, PieChart, Settings, Database, 
@@ -190,7 +193,9 @@ const Sidebar = ({
         </div>
       </div>
     </div>
-  );
+};
+
+export default LeadEnrichmentPlatform;
 };
 
 // Enhanced Header Component
@@ -547,84 +552,6 @@ const AnalyticsTab = ({ stats }) => (
   </div>
 );
 
-const SettingsTab = ({ darkMode, toggleTheme }) => (
-  <div className="space-y-6">
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Settings</h3>
-      
-      <div className="space-y-6">
-        {/* Theme Settings */}
-        <div>
-          <h4 className="font-medium text-gray-900 dark:text-white mb-3">Appearance</h4>
-          <button
-            onClick={toggleTheme}
-            className="flex items-center space-x-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            {darkMode ? (
-              <Moon className="h-5 w-5 text-blue-600" />
-            ) : (
-              <Sun className="h-5 w-5 text-yellow-600" />
-            )}
-            <span className="text-gray-900 dark:text-white">
-              {darkMode ? 'Dark Mode' : 'Light Mode'}
-            </span>
-          </button>
-        </div>
-
-        {/* API Settings */}
-        <div>
-          <h4 className="font-medium text-gray-900 dark:text-white mb-3">API Configuration</h4>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Default Provider
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                <option>Surfe</option>
-                <option>Apollo.io</option>
-                <option>Hunter.io</option>
-                <option>Clearbit</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                API Key
-              </label>
-              <input 
-                type="password" 
-                placeholder="Enter your API key"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              />
-            </div>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              Save Settings
-            </button>
-          </div>
-        </div>
-
-        {/* Notifications */}
-        <div>
-          <h4 className="font-medium text-gray-900 dark:text-white mb-3">Notifications</h4>
-          <div className="space-y-3">
-            <label className="flex items-center space-x-3">
-              <input type="checkbox" defaultChecked className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="text-gray-700 dark:text-gray-300">Email notifications for enrichment completion</span>
-            </label>
-            <label className="flex items-center space-x-3">
-              <input type="checkbox" defaultChecked className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="text-gray-700 dark:text-gray-300">Low credits warning</span>
-            </label>
-            <label className="flex items-center space-x-3">
-              <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-              <span className="text-gray-700 dark:text-gray-300">Weekly performance reports</span>
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 // Simple Upload Modal
 const UploadModal = ({ onClose, onUpload }) => {
   const [dragActive, setDragActive] = useState(false);
@@ -706,7 +633,29 @@ const UploadModal = ({ onClose, onUpload }) => {
 
 // Main Enhanced Component
 const LeadEnrichmentPlatform = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  // FIXED: Initialize darkMode and apiSettings from localStorage
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem('leadflow-theme');
+      if (saved) {
+        return saved === 'dark';
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch {
+      return false;
+    }
+  });
+
+  // FIXED: Initialize apiSettings from localStorage
+  const [apiSettings, setApiSettingsState] = useState(() => {
+    try {
+      const saved = localStorage.getItem('leadflow-api-settings');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -719,6 +668,34 @@ const LeadEnrichmentPlatform = () => {
     creditsUsed: 150,
     creditsRemaining: 850
   });
+
+  // FIXED: Create proper setApiSettings function that updates localStorage
+  const setApiSettings = (updater) => {
+    setApiSettingsState(prev => {
+      const newSettings = typeof updater === 'function' ? updater(prev) : updater;
+      // Save to localStorage immediately
+      try {
+        localStorage.setItem('leadflow-api-settings', JSON.stringify(newSettings));
+      } catch (error) {
+        console.error('Failed to save API settings:', error);
+      }
+      return newSettings;
+    });
+  };
+
+  // FIXED: Apply dark mode to document
+  useEffect(() => {
+    try {
+      if (darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem('leadflow-theme', darkMode ? 'dark' : 'light');
+    } catch (error) {
+      console.error('Failed to save theme:', error);
+    }
+  }, [darkMode]);
 
   // Initialize sample data
   useEffect(() => {
@@ -765,8 +742,7 @@ const LeadEnrichmentPlatform = () => {
 
   // Theme toggle
   const toggleTheme = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle('dark');
+    setDarkMode(prev => !prev);
   };
 
   // CSV upload handler
@@ -792,11 +768,13 @@ const LeadEnrichmentPlatform = () => {
       case 'analytics':
         return <AnalyticsTab stats={stats} />;
       case 'settings':
-        return <SettingsTab darkMode={darkMode} toggleTheme={toggleTheme} />;
+        return <SettingsTab apiSettings={apiSettings} setApiSettings={setApiSettings} darkMode={darkMode} toggleTheme={toggleTheme} />;
       default:
         return <Dashboard contacts={contacts} stats={stats} setShowUploadModal={setShowUploadModal} setActiveTab={setActiveTab} />;
     }
   };
+
+  console.log('Current API Settings:', apiSettings); // Debug log
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
@@ -833,6 +811,3 @@ const LeadEnrichmentPlatform = () => {
       )}
     </div>
   );
-};
-
-export default LeadEnrichmentPlatform;
