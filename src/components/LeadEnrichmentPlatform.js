@@ -5,7 +5,7 @@ import Dashboard from './dashboard/Dashboard';
 import ContactsTab from './contacts/ContactsTab';
 import ContactEnrichmentTab from './contacts/ContactEnrichmentTab';
 import CompaniesTab from './companies/CompaniesTab';
-import CompanyEnrichmentTab from './companies/CompanyEnrichmentTab';
+// Import the components we created
 import AnalyticsTab from './analytics/AnalyticsTab';
 import SettingsTab from './settings/SettingsTab';
 import UploadModal from './shared/UploadModal';
@@ -203,11 +203,16 @@ const LeadEnrichmentPlatform = () => {
       case 'companies':
         return <CompaniesTab {...sharedProps} />;
       case 'company-enrichment':
-        return <CompanyEnrichmentTab {...sharedProps} />;
+        return (
+          <div className="text-center py-12">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Company Enrichment</h3>
+            <p className="text-gray-600 dark:text-gray-400">Company enrichment features coming soon</p>
+          </div>
+        );
       case 'analytics':
         return <AnalyticsTab {...sharedProps} />;
       case 'settings':
-        return <SettingsTab {...sharedProps} />;
+        return <SettingsTab {...sharedProps} darkMode={darkMode} toggleTheme={toggleTheme} />;
       default:
         return <Dashboard {...sharedProps} />;
     }
@@ -220,6 +225,7 @@ const LeadEnrichmentPlatform = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           sidebarCollapsed={sidebarCollapsed}
+          setSidebarCollapsed={setSidebarCollapsed}
           stats={stats}
           darkMode={darkMode}
           toggleTheme={toggleTheme}
