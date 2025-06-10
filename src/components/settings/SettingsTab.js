@@ -1,28 +1,62 @@
-import React, { useState } from 'react';
+// Update src/components/settings/SettingsTab.js
+// Just modify the existing file with these changes
+
+import React, { useState, useEffect } from 'react';
 import { 
   Settings, Key, Bell, Shield, User, CreditCard, 
   Save, Eye, EyeOff, Check, X, AlertCircle, 
   Globe, Moon, Sun, Zap, Database, Mail,
-  Trash2, Plus, Download, Upload
+  Trash2, Plus, Download, Upload, CheckCircle, Loader
 } from 'lucide-react';
 
 const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => {
   const [activeSection, setActiveSection] = useState('api-keys');
   const [showApiKeys, setShowApiKeys] = useState({});
-  const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    enrichmentComplete: true,
-    lowCredits: true,
-    weeklyReports: false,
-    systemUpdates: true
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  
+  // Load notifications from localStorage or use defaults
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem('leadflow-notifications');
+      return saved ? JSON.parse(saved) : {
+        emailNotifications: true,
+        enrichmentComplete: true,
+        lowCredits: true,
+        weeklyReports: false,
+        systemUpdates: true
+      };
+    } catch {
+      return {
+        emailNotifications: true,
+        enrichmentComplete: true,
+        lowCredits: true,
+        weeklyReports: false,
+        systemUpdates: true
+      };
+    }
   });
   
-  const [preferences, setPreferences] = useState({
-    autoEnrich: false,
-    defaultProvider: 'surfe',
-    dataRetention: '90',
-    exportFormat: 'csv',
-    timezone: 'America/New_York'
+  // Load preferences from localStorage or use defaults
+  const [preferences, setPreferences] = useState(() => {
+    try {
+      const saved = localStorage.getItem('leadflow-preferences');
+      return saved ? JSON.parse(saved) : {
+        autoEnrich: false,
+        defaultProvider: 'surfe',
+        dataRetention: '90',
+        exportFormat: 'csv',
+        timezone: 'America/New_York'
+      };
+    } catch {
+      return {
+        autoEnrich: false,
+        defaultProvider: 'surfe',
+        dataRetention: '90',
+        exportFormat: 'csv',
+        timezone: 'America/New_York'
+      };
+    }
   });
 
   const [billingInfo, setBillingInfo] = useState({
@@ -32,6 +66,23 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
     nextBilling: '2024-07-15',
     amount: '$49.99'
   });
+
+  // Auto-save notifications and preferences when they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('leadflow-notifications', JSON.stringify(notifications));
+    } catch (error) {
+      console.error('Failed to save notifications:', error);
+    }
+  }, [notifications]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('leadflow-preferences', JSON.stringify(preferences));
+    } catch (error) {
+      console.error('Failed to save preferences:', error);
+    }
+  }, [preferences]);
 
   const apiProviders = [
     {
@@ -94,9 +145,94 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
     }));
   };
 
-  const handleSaveSettings = () => {
-    // Save settings logic
-    console.log('Settings saved');
+  const testApiKey = async (providerId) => {
+    const apiKey = apiSettings[`${providerId}ApiKey`];
+    if (!apiKey) {
+      alert('Please enter an API key first');
+      return;
+    }
+
+    try {
+      // Simulate API key test
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Mock validation - in real app, this would call the actual API
+      const isValid = apiKey.length > 10; // Simple validation
+      
+      if (isValid) {
+        alert(`${apiProviders.find(p => p.id === providerId)?.name} API key is valid!`);
+      } else {
+        alert('Invalid API key format');
+      }
+    } catch (error) {
+      alert('Failed to test API key');
+    }
+  };
+
+  // FIXED: Proper save settings function
+  const handleSaveSettings = async () => {
+    setIsSaving(true);
+    setSaveSuccess(false);
+
+    try {
+      // Save API settings
+      localStorage.setItem('leadflow-api-settings', JSON.stringify(apiSettings));
+      
+      // Save notifications (already auto-saved, but ensure it's saved)
+      localStorage.setItem('leadflow-notifications', JSON.stringify(notifications));
+      
+      // Save preferences (already auto-saved, but ensure it's saved)
+      localStorage.setItem('leadflow-preferences', JSON.stringify(preferences));
+      
+      // Simulate save delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success
+      setSaveSuccess(true);
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => setSaveSuccess(false), 3000);
+      
+      console.log('Settings saved successfully:', {
+        apiSettings,
+        notifications,
+        preferences
+      });
+      
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      alert('Failed to save settings. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const resetSection = () => {
+    switch (activeSection) {
+      case 'api-keys':
+        setApiSettings({});
+        break;
+      case 'notifications':
+        setNotifications({
+          emailNotifications: true,
+          enrichmentComplete: true,
+          lowCredits: true,
+          weeklyReports: false,
+          systemUpdates: true
+        });
+        break;
+      case 'preferences':
+        setPreferences({
+          autoEnrich: false,
+          defaultProvider: 'surfe',
+          dataRetention: '90',
+          exportFormat: 'csv',
+          timezone: 'America/New_York'
+        });
+        break;
+      default:
+        break;
+    }
   };
 
   const renderApiKeysSection = () => (
@@ -157,7 +293,10 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
                   <Eye className="h-4 w-4 text-gray-500" />
                 )}
               </button>
-              <button className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+              <button 
+                onClick={() => testApiKey(provider.id)}
+                className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              >
                 Test
               </button>
             </div>
@@ -435,13 +574,42 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
           </p>
         </div>
         
-        <button
-          onClick={handleSaveSettings}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Save className="h-4 w-4" />
-          <span>Save Changes</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          {/* Success Message */}
+          {saveSuccess && (
+            <div className="flex items-center space-x-2 text-green-600 dark:text-green-400">
+              <CheckCircle className="h-4 w-4" />
+              <span className="text-sm">Settings saved!</span>
+            </div>
+          )}
+          
+          {/* Reset Button */}
+          <button
+            onClick={resetSection}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            Reset Section
+          </button>
+          
+          {/* Save Button - FIXED */}
+          <button
+            onClick={handleSaveSettings}
+            disabled={isSaving}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isSaving ? (
+              <>
+                <Loader className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                <span>Save Changes</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
