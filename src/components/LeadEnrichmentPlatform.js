@@ -1,27 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, Users, UserPlus, Building2, Zap, PieChart, Settings, Database, 
-  Sun, Moon, ChevronLeft, ChevronRight, Search, Upload, Loader, Filter,
-  Mail, Phone, MapPin, Linkedin, Eye, Edit, Copy, Clock, CheckCircle, 
-  AlertCircle, X, Plus, Download, RefreshCw, Bell, HelpCircle, User,
-  ChevronDown, Menu, LogOut, CreditCard, Globe, Heart, Shield, Briefcase,
-  DollarSign, ExternalLink, Target, Calendar, TrendingUp, Activity,
-  Star, Tag, Trash2, Save, Info, ArrowRight, FileText, MoreVertical
+  Sun, Moon, ChevronLeft, ChevronRight, Search, Upload, Loader,
+  Mail, Phone, MapPin, CheckCircle, X, Plus, RefreshCw, Bell, 
+  ChevronDown, Menu, Target
 } from 'lucide-react';
-import { initializeSampleData } from '../utils/mockData';
 
-// Import Components
-import Dashboard from './dashboard/Dashboard';
-import ContactsTab from './contacts/ContactsTab';
-import ContactEnrichmentTab from './contacts/ContactEnrichmentTab';
-import CompaniesTab from './companies/CompaniesTab';
-import CompanyEnrichmentTab from './companies/CompanyEnrichmentTab';
-import AnalyticsTab from './analytics/AnalyticsTab';
-import SettingsTab from './settings/SettingsTab';
-import UploadModal from './shared/UploadModal';
-import ContactModal from './shared/ContactModal';
-
-// Enhanced Sidebar Component
+// Sidebar Component
 const Sidebar = ({ 
   activeTab, 
   setActiveTab, 
@@ -56,12 +41,6 @@ const Sidebar = ({
       label: 'Companies', 
       icon: Building2,
       description: 'Company database'
-    },
-    { 
-      id: 'company-enrichment', 
-      label: 'Company Enrichment', 
-      icon: Zap,
-      description: 'Enrich company data'
     },
     { 
       id: 'analytics', 
@@ -173,7 +152,7 @@ const Sidebar = ({
           {!sidebarCollapsed && (
             <>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {stats?.creditsRemaining || 850}
+                {stats?.creditsRemaining || 1000}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                 remaining this month
@@ -183,14 +162,14 @@ const Sidebar = ({
                 <div 
                   className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
                   style={{ 
-                    width: `${((stats?.creditsUsed || 150) / ((stats?.creditsUsed || 150) + (stats?.creditsRemaining || 850))) * 100}%` 
+                    width: `${((stats?.creditsUsed || 0) / ((stats?.creditsUsed || 0) + (stats?.creditsRemaining || 1000))) * 100}%` 
                   }}
                 ></div>
               </div>
               
               <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                <span>{stats?.creditsUsed || 150} used</span>
-                <span>{(stats?.creditsUsed || 150) + (stats?.creditsRemaining || 850)} total</span>
+                <span>{stats?.creditsUsed || 0} used</span>
+                <span>{(stats?.creditsUsed || 0) + (stats?.creditsRemaining || 1000)} total</span>
               </div>
               
               <button className="w-full mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-medium">
@@ -204,12 +183,8 @@ const Sidebar = ({
   );
 };
 
-// Enhanced Header Component
-const Header = ({ 
-  activeTab, 
-  sidebarCollapsed, 
-  setSidebarCollapsed 
-}) => {
+// Header Component
+const Header = ({ activeTab, sidebarCollapsed, setSidebarCollapsed }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -218,7 +193,6 @@ const Header = ({
     'contacts': 'Contacts',
     'contact-enrichment': 'Contact Enrichment',
     'companies': 'Companies', 
-    'company-enrichment': 'Company Enrichment',
     'analytics': 'Analytics',
     'settings': 'Settings'
   };
@@ -289,12 +263,8 @@ const Header = ({
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Notifications</h3>
                   <div className="space-y-3">
                     <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Enrichment Complete</p>
-                      <p className="text-xs text-blue-800 dark:text-blue-200">5 contacts successfully enriched</p>
-                    </div>
-                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                      <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">Low Credits</p>
-                      <p className="text-xs text-yellow-800 dark:text-yellow-200">Only 100 credits remaining</p>
+                      <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Welcome to LeadFlow</p>
+                      <p className="text-xs text-blue-800 dark:text-blue-200">Start by uploading your contacts or companies</p>
                     </div>
                   </div>
                 </div>
@@ -304,7 +274,7 @@ const Header = ({
 
           <div className="flex items-center space-x-2 p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 rounded-lg transition-colors">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-              JD
+              U
             </div>
             <ChevronDown className="h-4 w-4" />
           </div>
@@ -314,8 +284,173 @@ const Header = ({
   );
 };
 
+// Dashboard Component
+const Dashboard = ({ contacts, stats, setShowUploadModal, setActiveTab }) => {
+  return (
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Total Contacts</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{stats.totalContacts}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Active leads</p>
+            </div>
+            <div className="p-3 rounded-lg bg-blue-500 ml-4">
+              <Users className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Enriched Contacts</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{stats.enrichedContacts}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{Math.round((stats.enrichedContacts / (stats.totalContacts || 1)) * 100)}% success rate</p>
+            </div>
+            <div className="p-3 rounded-lg bg-green-500 ml-4">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Credits Used</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{stats.creditsUsed}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">This month</p>
+            </div>
+            <div className="p-3 rounded-lg bg-orange-500 ml-4">
+              <Zap className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Success Rate</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{stats.successRate}%</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Overall accuracy</p>
+            </div>
+            <div className="p-3 rounded-lg bg-purple-500 ml-4">
+              <Target className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions and Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+          
+          <div className="space-y-3">
+            <button
+              onClick={() => setShowUploadModal(true)}
+              className="w-full flex items-center space-x-3 p-3 rounded-lg transition-colors bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30"
+            >
+              <Upload className="h-5 w-5 flex-shrink-0" />
+              <div className="text-left flex-1">
+                <div className="font-medium">Upload CSV</div>
+                <div className="text-xs opacity-75">Import contacts or companies</div>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('contact-enrichment')}
+              className="w-full flex items-center space-x-3 p-3 rounded-lg transition-colors bg-green-50 text-green-600 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30"
+            >
+              <UserPlus className="h-5 w-5 flex-shrink-0" />
+              <div className="text-left flex-1">
+                <div className="font-medium">Contact Enrichment</div>
+                <div className="text-xs opacity-75">Find emails and phone numbers</div>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className="w-full flex items-center space-x-3 p-3 rounded-lg transition-colors bg-purple-50 text-purple-600 hover:bg-purple-100 dark:bg-purple-900/20 dark:text-purple-400 dark:hover:bg-purple-900/30"
+            >
+              <BarChart3 className="h-5 w-5 flex-shrink-0" />
+              <div className="text-left flex-1">
+                <div className="font-medium">View Analytics</div>
+                <div className="text-xs opacity-75">Performance insights</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Getting Started */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Getting Started</h3>
+          </div>
+
+          {contacts.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8 text-gray-400" />
+              </div>
+              <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                No contacts yet
+              </h4>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                Upload a CSV file or add contacts manually to get started with enrichment
+              </p>
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                <Upload className="h-4 w-4" />
+                <span>Upload Contacts</span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {contacts.slice(0, 3).map((contact) => (
+                <div key={contact.id} className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+                    {contact.firstName[0]}{contact.lastName[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 dark:text-white truncate">
+                      {contact.firstName} {contact.lastName}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                      {contact.company}
+                    </p>
+                  </div>
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    contact.status === 'enriched' 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                  }`}>
+                    {contact.status}
+                  </span>
+                </div>
+              ))}
+              {contacts.length > 3 && (
+                <button 
+                  onClick={() => setActiveTab('contacts')}
+                  className="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 py-2"
+                >
+                  View all {contacts.length} contacts
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Simple Upload Modal
-const SimpleUploadModal = ({ onClose, onUpload, type = 'contacts' }) => {
+const SimpleUploadModal = ({ onClose, onUpload }) => {
   const [dragActive, setDragActive] = useState(false);
 
   const handleDrop = (e) => {
@@ -393,9 +528,158 @@ const SimpleUploadModal = ({ onClose, onUpload, type = 'contacts' }) => {
   );
 };
 
-// Main Enhanced Component
+// Placeholder components for other tabs
+const ContactsTab = ({ contacts }) => (
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">All Contacts ({contacts.length})</h3>
+    {contacts.length === 0 ? (
+      <div className="text-center py-8">
+        <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-600 dark:text-gray-400">No contacts available. Upload a CSV to get started.</p>
+      </div>
+    ) : (
+      <div className="space-y-4">
+        {contacts.map((contact) => (
+          <div key={contact.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <div>
+              <h4 className="font-medium text-gray-900 dark:text-white">
+                {contact.firstName} {contact.lastName}
+              </h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{contact.company}</p>
+            </div>
+            <span className={`px-2 py-1 text-xs rounded-full ${
+              contact.status === 'enriched' 
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+            }`}>
+              {contact.status}
+            </span>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+const ContactEnrichmentTab = () => (
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contact Enrichment</h3>
+    <div className="text-center py-8">
+      <UserPlus className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+      <p className="text-gray-600 dark:text-gray-400">Contact enrichment interface coming soon</p>
+    </div>
+  </div>
+);
+
+const CompaniesTab = () => (
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Companies</h3>
+    <div className="text-center py-8">
+      <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+      <p className="text-gray-600 dark:text-gray-400">Companies management interface coming soon</p>
+    </div>
+  </div>
+);
+
+const AnalyticsTab = ({ stats }) => (
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Analytics Overview</h3>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h4 className="font-medium text-gray-900 dark:text-white mb-3">Performance Metrics</h4>
+        <div className="space-y-3">
+          <div>
+            <div className="flex justify-between mb-1">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Success Rate</span>
+              <span className="text-sm font-medium">{stats.successRate}%</span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: `${stats.successRate}%` }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h4 className="font-medium text-gray-900 dark:text-white mb-3">Quick Stats</h4>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-400">Total Contacts:</span>
+            <span className="font-medium">{stats.totalContacts}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-400">Enriched:</span>
+            <span className="font-medium">{stats.enrichedContacts}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600 dark:text-gray-400">Credits Used:</span>
+            <span className="font-medium">{stats.creditsUsed}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => (
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Settings</h3>
+    
+    <div className="space-y-6">
+      {/* Theme Settings */}
+      <div>
+        <h4 className="font-medium text-gray-900 dark:text-white mb-3">Appearance</h4>
+        <button
+          onClick={toggleTheme}
+          className="flex items-center space-x-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          {darkMode ? (
+            <Moon className="h-5 w-5 text-blue-600" />
+          ) : (
+            <Sun className="h-5 w-5 text-yellow-600" />
+          )}
+          <span className="text-gray-900 dark:text-white">
+            {darkMode ? 'Dark Mode' : 'Light Mode'}
+          </span>
+        </button>
+      </div>
+
+      {/* API Settings */}
+      <div>
+        <h4 className="font-medium text-gray-900 dark:text-white mb-3">API Configuration</h4>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Default Provider
+            </label>
+            <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+              <option>Surfe</option>
+              <option>Apollo.io</option>
+              <option>Hunter.io</option>
+              <option>Clearbit</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              API Key
+            </label>
+            <input 
+              type="password" 
+              placeholder="Enter your API key"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            />
+          </div>
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Main Component
 const LeadEnrichmentPlatform = () => {
-  // Initialize state with proper localStorage handling
+  // Initialize theme from localStorage or system preference
   const [darkMode, setDarkMode] = useState(() => {
     try {
       const saved = localStorage.getItem('leadflow-theme');
@@ -409,34 +693,22 @@ const LeadEnrichmentPlatform = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [selectedContact, setSelectedContact] = useState(null);
   const [loading, setLoading] = useState(false);
   
   // Data states
   const [contacts, setContacts] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [selectedContacts, setSelectedContacts] = useState([]);
   
-  // Filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    status: 'all',
-    source: 'all',
-    hasEmail: 'all',
-    hasPhone: 'all'
-  });
-
   // Stats
   const [stats, setStats] = useState({
     totalContacts: 0,
     enrichedContacts: 0,
     successRate: 85,
-    creditsUsed: 150,
-    creditsRemaining: 850
+    creditsUsed: 0,
+    creditsRemaining: 1000
   });
 
-  // API Settings with proper localStorage handling
+  // API Settings
   const [apiSettings, setApiSettingsState] = useState(() => {
     try {
       const saved = localStorage.getItem('leadflow-api-settings');
@@ -446,7 +718,7 @@ const LeadEnrichmentPlatform = () => {
     }
   });
 
-  // Wrapper function for setApiSettings that saves to localStorage
+  // Wrapper function for setApiSettings
   const setApiSettings = (updater) => {
     setApiSettingsState(prev => {
       const newSettings = typeof updater === 'function' ? updater(prev) : updater;
@@ -459,7 +731,7 @@ const LeadEnrichmentPlatform = () => {
     });
   };
 
-  // Apply dark mode to document and save to localStorage
+  // Apply dark mode and save to localStorage
   useEffect(() => {
     try {
       if (darkMode) {
@@ -473,50 +745,11 @@ const LeadEnrichmentPlatform = () => {
     }
   }, [darkMode]);
 
-  // Initialize sample data
-  useEffect(() => {
-    try {
-      const { sampleContacts, sampleCompanies } = initializeSampleData();
-      setContacts(sampleContacts);
-      setCompanies(sampleCompanies);
-      setStats(prev => ({
-        ...prev,
-        totalContacts: sampleContacts.length,
-        enrichedContacts: sampleContacts.filter(c => c.status === 'enriched').length
-      }));
-    } catch (error) {
-      console.log('Using fallback data:', error);
-      const fallbackContacts = [
-        {
-          id: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          company: 'TechCorp',
-          jobTitle: 'Software Engineer',
-          phone: '+1-555-0123',
-          status: 'enriched'
-        }
-      ];
-      setContacts(fallbackContacts);
-      setStats(prev => ({
-        ...prev,
-        totalContacts: fallbackContacts.length,
-        enrichedContacts: 1
-      }));
-    }
-  }, []);
-
-  // Theme toggle with proper localStorage saving
+  // Theme toggle
   const toggleTheme = () => {
     setDarkMode(prev => {
       const newMode = !prev;
       try {
-        if (newMode) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
         localStorage.setItem('leadflow-theme', newMode ? 'dark' : 'light');
       } catch (error) {
         console.error('Failed to save theme:', error);
@@ -529,7 +762,6 @@ const LeadEnrichmentPlatform = () => {
   const handleCsvUpload = (file) => {
     console.log('Uploading file:', file.name);
     
-    // Simple CSV parsing for demo
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
@@ -591,67 +823,35 @@ const LeadEnrichmentPlatform = () => {
     reader.readAsText(file);
   };
 
-  // Contact enrichment function
-  const enrichContacts = async (contactIds) => {
-    setLoading(true);
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setContacts(prev => prev.map(contact => {
-        if (contactIds.includes(contact.id) && contact.status === 'pending') {
-          return {
-            ...contact,
-            email: contact.email || `${contact.firstName?.toLowerCase()}.${contact.lastName?.toLowerCase()}@${contact.company?.toLowerCase().replace(/\s+/g, '') || 'company'}.com`,
-            phone: contact.phone || `+1-555-${Math.floor(Math.random() * 9000) + 1000}`,
-            linkedinUrl: contact.linkedinUrl || `https://linkedin.com/in/${contact.firstName?.toLowerCase()}${contact.lastName?.toLowerCase()}`,
-            status: 'enriched',
-            enrichedAt: new Date(),
-            confidence: Math.floor(Math.random() * 20) + 80
-          };
-        }
-        return contact;
-      }));
-
-      // Update stats
-      setStats(prev => ({
-        ...prev,
-        enrichedContacts: prev.enrichedContacts + contactIds.length,
-        creditsUsed: prev.creditsUsed + (contactIds.length * 2)
-      }));
-
-      alert(`Successfully enriched ${contactIds.length} contacts!`);
-    } catch (error) {
-      console.error('Enrichment error:', error);
-      alert('Enrichment failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Filter contacts
-  const filteredContacts = contacts.filter(contact => {
-    const matchesSearch = !searchTerm || 
-      contact.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.company?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus = filters.status === 'all' || contact.status === filters.status;
-    const matchesSource = filters.source === 'all' || contact.source === filters.source;
-    const matchesEmail = filters.hasEmail === 'all' || 
-      (filters.hasEmail === 'yes' && contact.email) ||
-      (filters.hasEmail === 'no' && !contact.email);
-    const matchesPhone = filters.hasPhone === 'all' || 
-      (filters.hasPhone === 'yes' && contact.phone) ||
-      (filters.hasPhone === 'no' && !contact.phone);
-
-    return matchesSearch && matchesStatus && matchesSource && matchesEmail && matchesPhone;
-  });
-
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'dashboard':
+        return (
+          <Dashboard 
+            contacts={contacts} 
+            stats={stats} 
+            setShowUploadModal={setShowUploadModal} 
+            setActiveTab={setActiveTab} 
+          />
+        );
+      case 'contacts':
+        return <ContactsTab contacts={contacts} />;
+      case 'contact-enrichment':
+        return <ContactEnrichmentTab />;
+      case 'companies':
+        return <CompaniesTab />;
+      case 'analytics':
+        return <AnalyticsTab stats={stats} />;
+      case 'settings':
+        return (
+          <SettingsTab 
+            apiSettings={apiSettings} 
+            setApiSettings={setApiSettings} 
+            darkMode={darkMode} 
+            toggleTheme={toggleTheme} 
+          />
+        );
+      default:
         return (
           <Dashboard 
             contacts={contacts} 
@@ -689,101 +889,15 @@ const LeadEnrichmentPlatform = () => {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Upload Modal */}
       {showUploadModal && (
         <SimpleUploadModal 
           onClose={() => setShowUploadModal(false)}
           onUpload={handleCsvUpload}
-          type="contacts"
-        />
-      )}
-
-      {showContactModal && selectedContact && (
-        <ContactModal 
-          contact={selectedContact}
-          onClose={() => {
-            setShowContactModal(false);
-            setSelectedContact(null);
-          }}
-          onSave={(updatedContact) => {
-            setContacts(prev => prev.map(c => 
-              c.id === updatedContact.id ? updatedContact : c
-            ));
-            setShowContactModal(false);
-            setSelectedContact(null);
-          }}
         />
       )}
     </div>
   );
 };
 
-export default LeadEnrichmentPlatform;ShowUploadModal={setShowUploadModal} 
-            setActiveTab={setActiveTab} 
-          />
-        );
-      case 'contacts':
-        return (
-          <ContactsTab 
-            filteredContacts={filteredContacts}
-            selectedContacts={selectedContacts}
-            setSelectedContacts={setSelectedContacts}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            filters={filters}
-            setFilters={setFilters}
-            enrichContacts={enrichContacts}
-            loading={loading}
-            setShowUploadModal={setShowUploadModal}
-            setSelectedContact={setSelectedContact}
-            setShowContactModal={setShowContactModal}
-          />
-        );
-      case 'contact-enrichment':
-        return (
-          <ContactEnrichmentTab 
-            contacts={contacts}
-            loading={loading}
-            enrichContacts={enrichContacts}
-            setShowUploadModal={setShowUploadModal}
-            apiSettings={apiSettings}
-            setApiSettings={setApiSettings}
-          />
-        );
-      case 'companies':
-        return (
-          <CompaniesTab 
-            companies={companies}
-            contacts={contacts}
-            setShowUploadModal={setShowUploadModal}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-          />
-        );
-      case 'company-enrichment':
-        return (
-          <CompanyEnrichmentTab 
-            companies={companies}
-            loading={loading}
-            setShowUploadModal={setShowUploadModal}
-            apiSettings={apiSettings}
-            setApiSettings={setApiSettings}
-          />
-        );
-      case 'analytics':
-        return <AnalyticsTab contacts={contacts} companies={companies} stats={stats} />;
-      case 'settings':
-        return (
-          <SettingsTab 
-            apiSettings={apiSettings} 
-            setApiSettings={setApiSettings} 
-            darkMode={darkMode} 
-            toggleTheme={toggleTheme} 
-          />
-        );
-      default:
-        return (
-          <Dashboard 
-            contacts={contacts} 
-            stats={stats} 
-            set
+export default LeadEnrichmentPlatform;
