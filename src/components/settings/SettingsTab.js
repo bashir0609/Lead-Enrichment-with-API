@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Settings, Key, Bell, Shield, User, CreditCard, 
-  Save, Eye, EyeOff, Check, X, AlertCircle, 
+import {
+  Settings, Key, Bell, Shield, User, CreditCard,
+  Save, Eye, EyeOff, Check, X, AlertCircle,
   Globe, Moon, Sun, Zap, Database, Mail,
   Trash2, Plus, Download, Upload, CheckCircle, Loader
 } from 'lucide-react';
@@ -11,7 +11,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
   const [showApiKeys, setShowApiKeys] = useState({});
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  
+
   // Load notifications from localStorage or use defaults
   const [notifications, setNotifications] = useState(() => {
     try {
@@ -33,7 +33,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
       };
     }
   });
-  
+
   // Load preferences from localStorage or use defaults
   const [preferences, setPreferences] = useState(() => {
     try {
@@ -152,10 +152,10 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
     try {
       // Simulate API key test
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // Mock validation - in real app, this would call the actual API
       const isValid = apiKey.length > 10; // Simple validation
-      
+
       if (isValid) {
         alert(`${apiProviders.find(p => p.id === providerId)?.name} API key is valid!`);
       } else {
@@ -173,28 +173,28 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
     try {
       // Save API settings to localStorage
       localStorage.setItem('leadflow-api-settings', JSON.stringify(apiSettings));
-      
+
       // Save notifications (already auto-saved, but ensure it's saved)
       localStorage.setItem('leadflow-notifications', JSON.stringify(notifications));
-      
+
       // Save preferences (already auto-saved, but ensure it's saved)
       localStorage.setItem('leadflow-preferences', JSON.stringify(preferences));
-      
+
       // Simulate save delay for better UX
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Show success
       setSaveSuccess(true);
-      
+
       // Hide success message after 3 seconds
       setTimeout(() => setSaveSuccess(false), 3000);
-      
+
       console.log('Settings saved successfully:', {
         apiSettings,
         notifications,
         preferences
       });
-      
+
     } catch (error) {
       console.error('Failed to save settings:', error);
       alert('Failed to save settings. Please try again.');
@@ -257,7 +257,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
               </div>
               <div className="text-right">
                 <span className={`text-xs px-2 py-1 rounded-full ${
-                  provider.status === 'connected' 
+                  provider.status === 'connected'
                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                     : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
                 }`}>
@@ -268,7 +268,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
                 </p>
               </div>
             </div>
-            
+
             <div className="flex space-x-2">
               <div className="flex-1 relative">
                 <input
@@ -289,7 +289,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
                   <Eye className="h-4 w-4 text-gray-500" />
                 )}
               </button>
-              <button 
+              <button
                 onClick={() => testApiKey(provider.id)}
                 className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
               >
@@ -392,7 +392,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Default Provider
             </label>
-            <select 
+            <select
               value={preferences.defaultProvider}
               onChange={(e) => setPreferences(prev => ({ ...prev, defaultProvider: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -428,7 +428,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Data Retention (days)
             </label>
-            <select 
+            <select
               value={preferences.dataRetention}
               onChange={(e) => setPreferences(prev => ({ ...prev, dataRetention: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -445,7 +445,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Export Format
             </label>
-            <select 
+            <select
               value={preferences.exportFormat}
               onChange={(e) => setPreferences(prev => ({ ...prev, exportFormat: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -460,7 +460,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Timezone
             </label>
-            <select 
+            <select
               value={preferences.timezone}
               onChange={(e) => setPreferences(prev => ({ ...prev, timezone: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -522,7 +522,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
               <span className="font-medium text-green-600">{billingInfo.creditsRemaining}</span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-              <div 
+              <div
                 className="bg-blue-600 h-2 rounded-full"
                 style={{ width: `${(billingInfo.creditsUsed / (billingInfo.creditsUsed + billingInfo.creditsRemaining)) * 100}%` }}
               ></div>
@@ -707,7 +707,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
             Configure your account, API keys, and platform preferences
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           {saveSuccess && (
             <div className="flex items-center space-x-2 px-3 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-lg">
@@ -715,14 +715,14 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
               <span className="text-sm">Settings saved!</span>
             </div>
           )}
-          
+
           <button
             onClick={resetSection}
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Reset
           </button>
-          
+
           <button
             onClick={handleSaveSettings}
             disabled={isSaving}
