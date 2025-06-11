@@ -56,7 +56,7 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
     }
   });
 
-  const [billingInfo, setBillingInfo] = useState({
+  const [billingInfo] = useState({
     plan: 'Professional',
     creditsRemaining: 850,
     creditsUsed: 150,
@@ -166,7 +166,6 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
     }
   };
 
-  // FIXED: Proper save settings function
   const handleSaveSettings = async () => {
     setIsSaving(true);
     setSaveSuccess(false);
@@ -376,4 +375,238 @@ const SettingsTab = ({ apiSettings, setApiSettings, darkMode, toggleTheme }) => 
             </label>
             <button
               onClick={toggleTheme}
-              className="flex items-center space-x-2 w-full p-3 border border-
+              className="flex items-center space-x-2 w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              {darkMode ? (
+                <Moon className="h-5 w-5 text-blue-600" />
+              ) : (
+                <Sun className="h-5 w-5 text-yellow-600" />
+              )}
+              <span className="text-gray-900 dark:text-white">
+                {darkMode ? 'Dark Mode' : 'Light Mode'}
+              </span>
+            </button>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Default Provider
+            </label>
+            <select 
+              value={preferences.defaultProvider}
+              onChange={(e) => setPreferences(prev => ({ ...prev, defaultProvider: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            >
+              <option value="surfe">Surfe</option>
+              <option value="apollo">Apollo.io</option>
+              <option value="hunter">Hunter.io</option>
+              <option value="clearbit">Clearbit</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Auto-Enrichment
+            </label>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={preferences.autoEnrich}
+                onChange={(e) => setPreferences(prev => ({ ...prev, autoEnrich: e.target.checked }))}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              <span className="ml-3 text-sm text-gray-900 dark:text-white">
+                Automatically enrich new contacts
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Data Retention (days)
+            </label>
+            <select 
+              value={preferences.dataRetention}
+              onChange={(e) => setPreferences(prev => ({ ...prev, dataRetention: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            >
+              <option value="30">30 days</option>
+              <option value="90">90 days</option>
+              <option value="180">180 days</option>
+              <option value="365">1 year</option>
+              <option value="forever">Forever</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Export Format
+            </label>
+            <select 
+              value={preferences.exportFormat}
+              onChange={(e) => setPreferences(prev => ({ ...prev, exportFormat: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            >
+              <option value="csv">CSV</option>
+              <option value="xlsx">Excel (XLSX)</option>
+              <option value="json">JSON</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Timezone
+            </label>
+            <select 
+              value={preferences.timezone}
+              onChange={(e) => setPreferences(prev => ({ ...prev, timezone: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            >
+              <option value="America/New_York">Eastern Time</option>
+              <option value="America/Chicago">Central Time</option>
+              <option value="America/Denver">Mountain Time</option>
+              <option value="America/Los_Angeles">Pacific Time</option>
+              <option value="UTC">UTC</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBillingSection = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          Billing & Credits
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          Manage your subscription and credit usage.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+          <h4 className="font-medium text-gray-900 dark:text-white mb-4">Current Plan</h4>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-gray-600 dark:text-gray-400">Plan:</span>
+              <span className="font-medium text-gray-900 dark:text-white">{billingInfo.plan}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600 dark:text-gray-400">Next Billing:</span>
+              <span className="font-medium text-gray-900 dark:text-white">{billingInfo.nextBilling}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600 dark:text-gray-400">Amount:</span>
+              <span className="font-medium text-gray-900 dark:text-white">{billingInfo.amount}</span>
+            </div>
+          </div>
+          <button className="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Manage Subscription
+          </button>
+        </div>
+
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+          <h4 className="font-medium text-gray-900 dark:text-white mb-4">Credit Usage</h4>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-gray-600 dark:text-gray-400">Used:</span>
+              <span className="font-medium text-gray-900 dark:text-white">{billingInfo.creditsUsed}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600 dark:text-gray-400">Remaining:</span>
+              <span className="font-medium text-green-600">{billingInfo.creditsRemaining}</span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full"
+                style={{ width: `${(billingInfo.creditsUsed / (billingInfo.creditsUsed + billingInfo.creditsRemaining)) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+          <button className="w-full mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+            Buy More Credits
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSecuritySection = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          Security Settings
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          Manage your account security and privacy settings.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <h4 className="font-medium text-gray-900 dark:text-white mb-2">Two-Factor Authentication</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            Add an extra layer of security to your account.
+          </p>
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+            Enable 2FA
+          </button>
+        </div>
+
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <h4 className="font-medium text-gray-900 dark:text-white mb-2">API Access</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            Manage API keys and access tokens.
+          </p>
+          <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm">
+            Manage API Keys
+          </button>
+        </div>
+
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <h4 className="font-medium text-gray-900 dark:text-white mb-2">Data Export</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            Download all your data in a portable format.
+          </p>
+          <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm">
+            Request Export
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderAccountSection = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          Account Settings
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          Manage your account information and preferences.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <h4 className="font-medium text-gray-900 dark:text-white mb-3">Profile Information</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                First Name
+              </label>
+              <input
+                type="text"
+                defaultValue="John"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Last Name
+              </label>
